@@ -1,0 +1,605 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>4.4</version>
+    <date>2020-04-22T12:37:41Z</date>
+    <groups>
+        <group>
+            <name>Templates Users</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Template OS Linux Disk Performance</template>
+            <name>Template OS Linux Disk Performance</name>
+            <groups>
+                <group>
+                    <name>Templates Users</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>Disk Performance</name>
+                </application>
+            </applications>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>Disk discovery</name>
+                    <key>vfs.dev.discovery</key>
+                    <delay>1h</delay>
+                    <filter>
+                        <evaltype>OR</evaltype>
+                        <conditions>
+                            <condition>
+                                <macro>{#DEVTYPE}</macro>
+                                <value>partition</value>
+                                <formulaid>B</formulaid>
+                            </condition>
+                            <condition>
+                                <macro>{#DEVTYPE}</macro>
+                                <value>disk</value>
+                                <formulaid>A</formulaid>
+                            </condition>
+                        </conditions>
+                    </filter>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>{#DEVNAME}: Get stat</name>
+                            <key>disk.get[&quot;{#DEVNAME}&quot;]</key>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <applications>
+                                <application>
+                                    <name>Disk Performance</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Disk:{#DEVNAME} In flight</name>
+                            <type>DEPENDENT</type>
+                            <key>disk.io.flight[{#DEVNAME}]</key>
+                            <delay>0</delay>
+                            <units>ops/s</units>
+                            <description>9: in_flight       requests      number of I/Os currently in flight</description>
+                            <applications>
+                                <application>
+                                    <name>Disk Performance</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>JAVASCRIPT</type>
+                                    <params>return value.split(' ')[8]</params>
+                                </step>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>disk.get[&quot;{#DEVNAME}&quot;]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Disk:{#DEVNAME} Time in queue %</name>
+                            <type>DEPENDENT</type>
+                            <key>disk.io.queue.util[{#DEVNAME}]</key>
+                            <delay>0</delay>
+                            <units>%</units>
+                            <description>11: time_in_queue   milliseconds  total wait time for all requests</description>
+                            <applications>
+                                <application>
+                                    <name>Disk Performance</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>JAVASCRIPT</type>
+                                    <params>return value.split(' ')[10]</params>
+                                </step>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                                <step>
+                                    <type>MULTIPLIER</type>
+                                    <params>0.1</params>
+                                </step>
+                                <step>
+                                    <type>JAVASCRIPT</type>
+                                    <params>if (value &gt; 100) {
+    return 100    
+} else {
+    return value
+}</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>disk.get[&quot;{#DEVNAME}&quot;]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Disk:{#DEVNAME} Time active %</name>
+                            <type>DEPENDENT</type>
+                            <key>disk.io.util[{#DEVNAME}]</key>
+                            <delay>0</delay>
+                            <units>%</units>
+                            <description>10: io_ticks        milliseconds  total time this block device has been active</description>
+                            <applications>
+                                <application>
+                                    <name>Disk Performance</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>JAVASCRIPT</type>
+                                    <params>return value.split(' ')[9]</params>
+                                </step>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                                <step>
+                                    <type>MULTIPLIER</type>
+                                    <params>0.1</params>
+                                </step>
+                                <step>
+                                    <type>JAVASCRIPT</type>
+                                    <params>if (value &gt; 100) {
+    return 100    
+} else {
+    return value
+}</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>disk.get[&quot;{#DEVNAME}&quot;]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Disk:{#DEVNAME} Read I/Os</name>
+                            <type>DEPENDENT</type>
+                            <key>disk.read.io[{#DEVNAME}]</key>
+                            <delay>0</delay>
+                            <units>ops/s</units>
+                            <description>1: read I/Os       requests      number of read I/Os processed</description>
+                            <applications>
+                                <application>
+                                    <name>Disk Performance</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>JAVASCRIPT</type>
+                                    <params>return value.split(' ')[0]</params>
+                                </step>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>disk.get[&quot;{#DEVNAME}&quot;]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Disk:{#DEVNAME} Read latency</name>
+                            <type>CALCULATED</type>
+                            <key>disk.read.latency[{#DEVNAME}]</key>
+                            <value_type>FLOAT</value_type>
+                            <units>ms</units>
+                            <params>(last(&quot;disk.read.ticks[{#DEVNAME}]&quot;) / last(&quot;disk.read.io[{#DEVNAME}]&quot;))</params>
+                            <description>Request processing time</description>
+                            <applications>
+                                <application>
+                                    <name>Disk Performance</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Disk:{#DEVNAME} Read merges</name>
+                            <type>DEPENDENT</type>
+                            <key>disk.read.merged[{#DEVNAME}]</key>
+                            <delay>0</delay>
+                            <units>ops/s</units>
+                            <description>2: read merges     requests      number of read I/Os merged with in-queue I/O</description>
+                            <applications>
+                                <application>
+                                    <name>Disk Performance</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>JAVASCRIPT</type>
+                                    <params>return value.split(' ')[1]</params>
+                                </step>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>disk.get[&quot;{#DEVNAME}&quot;]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Disk:{#DEVNAME} Read sectors</name>
+                            <type>DEPENDENT</type>
+                            <key>disk.read.sectors[{#DEVNAME}]</key>
+                            <delay>0</delay>
+                            <units>B/sec</units>
+                            <description>3: read sectors    sectors       number of sectors read</description>
+                            <applications>
+                                <application>
+                                    <name>Disk Performance</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>JAVASCRIPT</type>
+                                    <params>return value.split(' ')[2]</params>
+                                </step>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                                <step>
+                                    <type>MULTIPLIER</type>
+                                    <params>512</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>disk.get[&quot;{#DEVNAME}&quot;]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Disk:{#DEVNAME} Read ticks</name>
+                            <type>DEPENDENT</type>
+                            <key>disk.read.ticks[{#DEVNAME}]</key>
+                            <delay>0</delay>
+                            <units>ms</units>
+                            <description>4: read ticks      milliseconds  total wait time for read requests</description>
+                            <applications>
+                                <application>
+                                    <name>Disk Performance</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>JAVASCRIPT</type>
+                                    <params>return value.split(' ')[3]</params>
+                                </step>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>disk.get[&quot;{#DEVNAME}&quot;]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Disk:{#DEVNAME} Time read %</name>
+                            <type>DEPENDENT</type>
+                            <key>disk.read.util[{#DEVNAME}]</key>
+                            <delay>0</delay>
+                            <units>%</units>
+                            <description>4: read ticks      milliseconds  total wait time for read requests</description>
+                            <applications>
+                                <application>
+                                    <name>Disk Performance</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>JAVASCRIPT</type>
+                                    <params>return value.split(' ')[3]</params>
+                                </step>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                                <step>
+                                    <type>MULTIPLIER</type>
+                                    <params>0.1</params>
+                                </step>
+                                <step>
+                                    <type>JAVASCRIPT</type>
+                                    <params>if (value &gt; 100) {
+    return 100    
+} else {
+    return value
+}</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>disk.get[&quot;{#DEVNAME}&quot;]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Disk:{#DEVNAME} Write I/Os</name>
+                            <type>DEPENDENT</type>
+                            <key>disk.write.io[{#DEVNAME}]</key>
+                            <delay>0</delay>
+                            <units>ops/s</units>
+                            <description>5: write I/Os      requests      number of write I/Os processed</description>
+                            <applications>
+                                <application>
+                                    <name>Disk Performance</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>JAVASCRIPT</type>
+                                    <params>return value.split(' ')[4]</params>
+                                </step>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>disk.get[&quot;{#DEVNAME}&quot;]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Disk:{#DEVNAME} Write latency</name>
+                            <type>CALCULATED</type>
+                            <key>disk.write.latency[{#DEVNAME}]</key>
+                            <value_type>FLOAT</value_type>
+                            <units>ms</units>
+                            <params>(last(&quot;disk.write.ticks[{#DEVNAME}]&quot;) / last(&quot;disk.write.io[{#DEVNAME}]&quot;))</params>
+                            <description>Request processing time</description>
+                            <applications>
+                                <application>
+                                    <name>Disk Performance</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Disk:{#DEVNAME} Write merges</name>
+                            <type>DEPENDENT</type>
+                            <key>disk.write.merged[{#DEVNAME}]</key>
+                            <delay>0</delay>
+                            <units>ops/s</units>
+                            <description>6: write merges    requests      number of write I/Os merged with in-queue I/O</description>
+                            <applications>
+                                <application>
+                                    <name>Disk Performance</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>JAVASCRIPT</type>
+                                    <params>return value.split(' ')[5]</params>
+                                </step>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>disk.get[&quot;{#DEVNAME}&quot;]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Disk:{#DEVNAME} Write sectors</name>
+                            <type>DEPENDENT</type>
+                            <key>disk.write.sectors[{#DEVNAME}]</key>
+                            <delay>0</delay>
+                            <units>B/sec</units>
+                            <description>7: write sectors   sectors       number of sectors written</description>
+                            <applications>
+                                <application>
+                                    <name>Disk Performance</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>JAVASCRIPT</type>
+                                    <params>return value.split(' ')[6]</params>
+                                </step>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                                <step>
+                                    <type>MULTIPLIER</type>
+                                    <params>512</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>disk.get[&quot;{#DEVNAME}&quot;]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Disk:{#DEVNAME} Write ticks</name>
+                            <type>DEPENDENT</type>
+                            <key>disk.write.ticks[{#DEVNAME}]</key>
+                            <delay>0</delay>
+                            <units>ms</units>
+                            <description>8: write ticks     milliseconds  total wait time for write requests</description>
+                            <applications>
+                                <application>
+                                    <name>Disk Performance</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>JAVASCRIPT</type>
+                                    <params>return value.split(' ')[7]</params>
+                                </step>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>disk.get[&quot;{#DEVNAME}&quot;]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Disk:{#DEVNAME} Time write %</name>
+                            <type>DEPENDENT</type>
+                            <key>disk.write.util[{#DEVNAME}]</key>
+                            <delay>0</delay>
+                            <units>%</units>
+                            <description>8: write ticks     milliseconds  total wait time for write requests</description>
+                            <applications>
+                                <application>
+                                    <name>Disk Performance</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>JAVASCRIPT</type>
+                                    <params>return value.split(' ')[7]</params>
+                                </step>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                                <step>
+                                    <type>MULTIPLIER</type>
+                                    <params>0.1</params>
+                                </step>
+                                <step>
+                                    <type>JAVASCRIPT</type>
+                                    <params>if (value &gt; 100) {
+    return 100    
+} else {
+    return value
+}</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>disk.get[&quot;{#DEVNAME}&quot;]</key>
+                            </master_item>
+                        </item_prototype>
+                    </item_prototypes>
+                    <graph_prototypes>
+                        <graph_prototype>
+                            <name>Disk:{#DEVNAME} Bytes/sec</name>
+                            <graph_items>
+                                <graph_item>
+                                    <color>4000FF</color>
+                                    <item>
+                                        <host>Template OS Linux Disk Performance</host>
+                                        <key>disk.read.sectors[{#DEVNAME}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <color>FF4000</color>
+                                    <item>
+                                        <host>Template OS Linux Disk Performance</host>
+                                        <key>disk.write.sectors[{#DEVNAME}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                        <graph_prototype>
+                            <name>Disk:{#DEVNAME} I/Os</name>
+                            <graph_items>
+                                <graph_item>
+                                    <color>4000FF</color>
+                                    <item>
+                                        <host>Template OS Linux Disk Performance</host>
+                                        <key>disk.read.io[{#DEVNAME}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <color>FF4000</color>
+                                    <item>
+                                        <host>Template OS Linux Disk Performance</host>
+                                        <key>disk.write.io[{#DEVNAME}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>2</sortorder>
+                                    <color>BF00FF</color>
+                                    <item>
+                                        <host>Template OS Linux Disk Performance</host>
+                                        <key>disk.read.merged[{#DEVNAME}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>3</sortorder>
+                                    <color>666699</color>
+                                    <item>
+                                        <host>Template OS Linux Disk Performance</host>
+                                        <key>disk.write.merged[{#DEVNAME}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>4</sortorder>
+                                    <color>00FF00</color>
+                                    <item>
+                                        <host>Template OS Linux Disk Performance</host>
+                                        <key>disk.io.flight[{#DEVNAME}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                        <graph_prototype>
+                            <name>Disk:{#DEVNAME} Latency</name>
+                            <graph_items>
+                                <graph_item>
+                                    <color>4000FF</color>
+                                    <item>
+                                        <host>Template OS Linux Disk Performance</host>
+                                        <key>disk.read.latency[{#DEVNAME}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <color>FF4000</color>
+                                    <item>
+                                        <host>Template OS Linux Disk Performance</host>
+                                        <key>disk.write.latency[{#DEVNAME}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                        <graph_prototype>
+                            <name>Disk:{#DEVNAME} Utilization</name>
+                            <graph_items>
+                                <graph_item>
+                                    <color>4000FF</color>
+                                    <item>
+                                        <host>Template OS Linux Disk Performance</host>
+                                        <key>disk.read.util[{#DEVNAME}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <color>FF4000</color>
+                                    <item>
+                                        <host>Template OS Linux Disk Performance</host>
+                                        <key>disk.write.util[{#DEVNAME}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>2</sortorder>
+                                    <color>BF00FF</color>
+                                    <item>
+                                        <host>Template OS Linux Disk Performance</host>
+                                        <key>disk.io.util[{#DEVNAME}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>3</sortorder>
+                                    <color>00FF00</color>
+                                    <item>
+                                        <host>Template OS Linux Disk Performance</host>
+                                        <key>disk.io.queue.util[{#DEVNAME}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                    </graph_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+        </template>
+    </templates>
+</zabbix_export>
