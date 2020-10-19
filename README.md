@@ -7,7 +7,7 @@
 - Zabbix-agent: 4.4 and later
 
 #### Check bash(Out json):
-- ```zabbix_get -s \<Host\> -k "vfs.dev.discovery"```
+- ```zabbix_get -s <Host> -k "vfs.dev.discovery"```
 
 #### Add from zabbix_agentd.conf "UserParameter" in zabbix_agentd.conf zabbix_agent:
 - **github**/zabbix_agentd.conf
